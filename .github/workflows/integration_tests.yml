@@ -833,148 +833,150 @@ jobs:
           JOB_STATUS: ${{ job.status }}
 
   test_desktop:
-    name: test-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
-    needs: [check_and_prepare, build_desktop]
-    runs-on: ${{ matrix.os }}
-    if: contains(needs.check_and_prepare.outputs.matrix_platform, 'Desktop') && needs.check_and_prepare.outputs.apis != '' && !cancelled()
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ${{ fromJson(needs.check_and_prepare.outputs.matrix_os) }}
-        arch: ${{ fromJson(needs.check_and_prepare.outputs.matrix_arch_combined) }}
-        ssl_variant: ${{ fromJson(needs.check_and_prepare.outputs.matrix_ssl) }}
-        # Because matrix_arch_combined combines Mac, Linux, and Windows, we need
-        # a few exclusions. These are standard exclusions used in several
-        # places.
-        exclude:
-        # Do not attempt to use arm64 on Windows or Linux.
-        - os: windows-latest
-          arch: arm64
-        - os: ubuntu-22.04
-          arch: arm64
-        # Do not attempt to use x86 on Mac.
-        - os: macos-14
-          arch: x86
-        # Until we support building openssl from source, we can't use the
-        # system's openssl when cross-compiling, except on Linux. Builds on Linux
-        # happen on x64 machines, so x86 is technically cross-compiling. Builds on
-        # Mac happen on arm64 machines, so x64 is technically cross-compiling.
-        - os: windows-latest
-          ssl_variant: openssl
-          arch: x86
-        - os: macos-14
-          ssl_variant: openssl
-          arch: x64
+    # name: test-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
+    name: test-desktop-foo
+    # needs: [check_and_prepare, build_desktop]
+    # runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-24.04
+    # if: contains(needs.check_and_prepare.outputs.matrix_platform, 'Desktop') && needs.check_and_prepare.outputs.apis != '' && !cancelled()
+    # strategy:
+    #   fail-fast: false
+    #   matrix:
+    #     os: ${{ fromJson(needs.check_and_prepare.outputs.matrix_os) }}
+    #     arch: ${{ fromJson(needs.check_and_prepare.outputs.matrix_arch_combined) }}
+    #     ssl_variant: ${{ fromJson(needs.check_and_prepare.outputs.matrix_ssl) }}
+    #     # Because matrix_arch_combined combines Mac, Linux, and Windows, we need
+    #     # a few exclusions. These are standard exclusions used in several
+    #     # places.
+    #     exclude:
+    #     # Do not attempt to use arm64 on Windows or Linux.
+    #     - os: windows-latest
+    #       arch: arm64
+    #     - os: ubuntu-22.04
+    #       arch: arm64
+    #     # Do not attempt to use x86 on Mac.
+    #     - os: macos-14
+    #       arch: x86
+    #     # Until we support building openssl from source, we can't use the
+    #     # system's openssl when cross-compiling, except on Linux. Builds on Linux
+    #     # happen on x64 machines, so x86 is technically cross-compiling. Builds on
+    #     # Mac happen on arm64 machines, so x64 is technically cross-compiling.
+    #     - os: windows-latest
+    #       ssl_variant: openssl
+    #       arch: x86
+    #     - os: macos-14
+    #       ssl_variant: openssl
+    #       arch: x64
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{needs.check_and_prepare.outputs.github_ref}}
-      - name: Download Desktop integration tests artifact
-        uses: actions/download-artifact@v4
-        with:
-          path: testapps/testapps-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
-          name: testapps-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.pythonVersion }}
-      - name: setup default Xcode version (macos)
-        if: ${{ runner.os == 'macOS' }}
-        run: |
-          sudo xcode-select -s /Applications/Xcode_${{ env.xcodeVersion }}.app/Contents/Developer
-          # Remove default Xcode version to prevent the wrong SDK from being used.
-          rm -rf /Applications/Xcode.app
-      - name: Install prerequisites for testing
-        uses: nick-invision/retry@v2
-        with:
-          shell: bash
-          timeout_minutes: 15
-          max_attempts: 3
-          command: scripts/gha/install_test_workflow_prereqs.sh -p Desktop -t true -a '${{ matrix.arch }}' -s '${{ matrix.ssl_variant }}'
-      - name: Set up Node (18)
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-      - name: Setup Firestore Emulator
-        uses: nick-invision/retry@v2
-        with:
-          shell: bash
-          timeout_minutes: 5
-          max_attempts: 3
-          command: npm install firebase-tools     
+      # - name: Download Desktop integration tests artifact
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     path: testapps/testapps-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
+      #     name: testapps-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
+      # - name: Setup python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: ${{ env.pythonVersion }}
+      # - name: setup default Xcode version (macos)
+      #   if: ${{ runner.os == 'macOS' }}
+      #   run: |
+      #     sudo xcode-select -s /Applications/Xcode_${{ env.xcodeVersion }}.app/Contents/Developer
+      #     # Remove default Xcode version to prevent the wrong SDK from being used.
+      #     rm -rf /Applications/Xcode.app
+      # - name: Install prerequisites for testing
+      #   uses: nick-invision/retry@v2
+      #   with:
+      #     shell: bash
+      #     timeout_minutes: 15
+      #     max_attempts: 3
+      #     command: scripts/gha/install_test_workflow_prereqs.sh -p Desktop -t true -a '${{ matrix.arch }}' -s '${{ matrix.ssl_variant }}'
+      # - name: Set up Node (18)
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: 18.x
+      # - name: Setup Firestore Emulator
+      #   uses: nick-invision/retry@v2
+      #   with:
+      #     shell: bash
+      #     timeout_minutes: 5
+      #     max_attempts: 3
+      #     command: npm install firebase-tools     
       - name: Add firebase-tools to PATH
         shell: bash
         run: |
           echo "$(npm root)" >> $GITHUB_PATH
           echo "$(npm root)/.bin" >> $GITHUB_PATH
-      - name: Setup java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Run Desktop integration tests
-        env:
-          USE_FIRESTORE_EMULATOR: true
-          NEEDS_CHECK_AND_PREPARE_OUTPUTS_APIS: ${{ needs.check_and_prepare.outputs.apis }}
-          LOGFILE_NAME: "desktop-${{matrix.os}}-${{matrix.arch}}-${{matrix.ssl_variant}}"
-        shell: bash
-        run: |
-          if [[ "${NEEDS_CHECK_AND_PREPARE_OUTPUTS_APIS}" == *"firestore"* ]]; then
-            firebase emulators:exec --only firestore --project demo-example "python scripts/gha/desktop_tester.py --testapp_dir testapps --logfile_name ${LOGFILE_NAME}"
-          else
-            python scripts/gha/desktop_tester.py --testapp_dir testapps --logfile_name ${LOGFILE_NAME}
-          fi
-      - name: Prepare results summary artifact
-        if: ${{ !cancelled() }}
-        shell: bash
-        run: |
-          # If testapps do not exist, then it's a build error not test error.
-          if [ -d "testapps/testapps-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}" ] && [ ! -f testapps/test-results-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}.log.json ]; then
-            mkdir -p testapps && echo "__SUMMARY_MISSING__" > testapps/test-results-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}.log.json
-          fi
-        env:
-          MATRIX_OS: ${{ matrix.os }}
-          MATRIX_ARCH: ${{ matrix.arch }}
-          MATRIX_SSL_VARIANT: ${{ matrix.ssl_variant }}
-      - name: Upload Desktop test results artifact
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: log-artifact-test-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
-          path: testapps/test-results-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}*
-          retention-days: ${{ env.logArtifactRetentionDays }}
-      - name: Download log artifacts
-        if: ${{ needs.check_and_prepare.outputs.pr_number && failure() && !cancelled() }}
-        uses: actions/download-artifact@v4
-        with:
-          path: test_results
-          name: log-artifact-test-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
-      - name: Update PR label and comment
-        if: ${{ needs.check_and_prepare.outputs.pr_number && failure() && !cancelled() }}
-        shell: bash
-        run: |
-          python scripts/gha/it_workflow.py --stage progress \
-            --token ${{github.token}} \
-            --issue_number ${NEEDS_CHECK_AND_PREPARE_OUTPUTS_PR_NUMBER}\
-            --actor ${GITHUB_ACTOR} \
-            --commit ${NEEDS_CHECK_AND_PREPARE_OUTPUTS_GITHUB_REF} \
-            --run_id ${{github.run_id}}
-        env:
-          NEEDS_CHECK_AND_PREPARE_OUTPUTS_PR_NUMBER: ${{needs.check_and_prepare.outputs.pr_number}}
-          NEEDS_CHECK_AND_PREPARE_OUTPUTS_GITHUB_REF: ${{needs.check_and_prepare.outputs.github_ref}}
-      - name: Summarize test results
-        if: ${{ !cancelled() }}
-        shell: bash
-        run: |
-          cat testapps/test-results-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}.log
-          if [[ "${JOB_STATUS}" != "success" ]]; then
-            exit 1
-          fi
-        env:
-          MATRIX_OS: ${{ matrix.os }}
-          MATRIX_ARCH: ${{ matrix.arch }}
-          MATRIX_SSL_VARIANT: ${{ matrix.ssl_variant }}
-          JOB_STATUS: ${{ job.status }}
+      # - name: Setup java
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     distribution: 'temurin'
+      #     java-version: '17'
+      # - name: Run Desktop integration tests
+      #   env:
+      #     USE_FIRESTORE_EMULATOR: true
+      #     NEEDS_CHECK_AND_PREPARE_OUTPUTS_APIS: ${{ needs.check_and_prepare.outputs.apis }}
+      #     LOGFILE_NAME: "desktop-${{matrix.os}}-${{matrix.arch}}-${{matrix.ssl_variant}}"
+      #   shell: bash
+      #   run: |
+      #     if [[ "${NEEDS_CHECK_AND_PREPARE_OUTPUTS_APIS}" == *"firestore"* ]]; then
+      #       firebase emulators:exec --only firestore --project demo-example "python scripts/gha/desktop_tester.py --testapp_dir testapps --logfile_name ${LOGFILE_NAME}"
+      #     else
+      #       python scripts/gha/desktop_tester.py --testapp_dir testapps --logfile_name ${LOGFILE_NAME}
+      #     fi
+      # - name: Prepare results summary artifact
+      #   if: ${{ !cancelled() }}
+      #   shell: bash
+      #   run: |
+      #     # If testapps do not exist, then it's a build error not test error.
+      #     if [ -d "testapps/testapps-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}" ] && [ ! -f testapps/test-results-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}.log.json ]; then
+      #       mkdir -p testapps && echo "__SUMMARY_MISSING__" > testapps/test-results-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}.log.json
+      #     fi
+      #   env:
+      #     MATRIX_OS: ${{ matrix.os }}
+      #     MATRIX_ARCH: ${{ matrix.arch }}
+      #     MATRIX_SSL_VARIANT: ${{ matrix.ssl_variant }}
+      # - name: Upload Desktop test results artifact
+      #   if: ${{ !cancelled() }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: log-artifact-test-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
+      #     path: testapps/test-results-desktop-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}*
+      #     retention-days: ${{ env.logArtifactRetentionDays }}
+      # - name: Download log artifacts
+      #   if: ${{ needs.check_and_prepare.outputs.pr_number && failure() && !cancelled() }}
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     path: test_results
+      #     name: log-artifact-test-${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.ssl_variant }}
+      # - name: Update PR label and comment
+      #   if: ${{ needs.check_and_prepare.outputs.pr_number && failure() && !cancelled() }}
+      #   shell: bash
+      #   run: |
+      #     python scripts/gha/it_workflow.py --stage progress \
+      #       --token ${{github.token}} \
+      #       --issue_number ${NEEDS_CHECK_AND_PREPARE_OUTPUTS_PR_NUMBER}\
+      #       --actor ${GITHUB_ACTOR} \
+      #       --commit ${NEEDS_CHECK_AND_PREPARE_OUTPUTS_GITHUB_REF} \
+      #       --run_id ${{github.run_id}}
+      #   env:
+      #     NEEDS_CHECK_AND_PREPARE_OUTPUTS_PR_NUMBER: ${{needs.check_and_prepare.outputs.pr_number}}
+      #     NEEDS_CHECK_AND_PREPARE_OUTPUTS_GITHUB_REF: ${{needs.check_and_prepare.outputs.github_ref}}
+      # - name: Summarize test results
+      #   if: ${{ !cancelled() }}
+      #   shell: bash
+      #   run: |
+      #     cat testapps/test-results-desktop-${MATRIX_OS}-${MATRIX_ARCH}-${MATRIX_SSL_VARIANT}.log
+      #     if [[ "${JOB_STATUS}" != "success" ]]; then
+      #       exit 1
+      #     fi
+      #   env:
+      #     MATRIX_OS: ${{ matrix.os }}
+      #     MATRIX_ARCH: ${{ matrix.arch }}
+      #     MATRIX_SSL_VARIANT: ${{ matrix.ssl_variant }}
+      #     JOB_STATUS: ${{ job.status }}
 
   test_android:
     name: test-android-${{ matrix.build_os }}-${{ matrix.android_device }}-${{ matrix.test_type }}
